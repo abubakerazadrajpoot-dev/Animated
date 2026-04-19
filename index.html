@@ -3,121 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABUBAKAR | THE INFINITY FLOW</title>
+    <title>ABUBAKAR | QUANTUM PORTAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;700&display=swap');
+        
+        body { margin: 0; background-color: #030303; overflow: hidden; font-family: 'Space Grotesk', sans-serif; color: white; }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Space Grotesk', sans-serif; }
-        canvas { display: block; position: absolute; top: 0; left: 0; }
-
-        /* Ultra Professional UI */
-        #ui {
+        /* Cinematic HUD Overlay */
+        #interface {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; pointer-events: none;
             display: flex; flex-direction: column; justify-content: space-between;
-            padding: 50px; box-sizing: border-box;
+            padding: 60px; box-sizing: border-box;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
         }
 
-        .header { border-left: 2px solid #fff; padding-left: 20px; }
-        .logo { font-family: 'Syncopate', sans-serif; font-size: 2rem; color: #fff; letter-spacing: 12px; }
-        .tagline { color: rgba(255,255,255,0.4); letter-spacing: 5px; font-size: 0.7rem; margin-top: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: start; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+        .logo { font-family: 'Syncopate', sans-serif; font-size: 2.2rem; color: #fff; letter-spacing: 12px; text-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
+        .tagline { color: #00f2fe; letter-spacing: 3px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; margin-top: 10px; }
 
-        .footer { display: flex; justify-content: space-between; align-items: flex-end; color: #fff; }
-        .data { font-family: monospace; font-size: 0.6rem; opacity: 0.5; line-height: 2; }
-        .status { font-weight: bold; letter-spacing: 2px; border: 1px solid #fff; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; }
+        .footer { display: flex; justify-content: space-between; align-items: flex-end; color: rgba(255,255,255,0.3); }
+        .data-stream { font-family: monospace; font-size: 0.6rem; line-height: 1.8; text-transform: uppercase; border-left: 2px solid #00f2fe; padding-left: 20px; }
+        .accent { color: #00f2fe; font-weight: bold; }
 
-        /* Subtle Grain Effect for Realism */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.05; pointer-events: none; z-index: 5;
+        #boot-screen {
+            position: fixed; width: 100%; height: 100%; background: #000;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; flex-direction: column; transition: 1.5s ease-in-out;
+            color: #00f2fe; letter-spacing: 4px; font-family: monospace;
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay"></div>
+    <div id="boot-screen">
+        <div style="font-size: 1.2rem; font-weight: bold;"></div>
+        <div style="font-size: 0.7rem; margin-top: 20px;">INITIALIZING QUANTUM CORE...</div>
+    </div>
 
-    <div id="ui">
+    <div id="interface">
         <div class="header">
-            <div class="logo">ABUBAKAR</div>
-            <div class="tagline">BEYOND VISUAL LIMITS // NO-PLANET SECTOR</div>
+            <div>
+                <div class="logo">ABUBAKAR</div>
+                <div class="tagline">Deep Space Quantum Portal v2.0</div>
+            </div>
         </div>
 
         <div class="footer">
-            <div class="data">
-                SYSTEM_MODE: ABSTRACT_FLOW<br>
-                RENDER_ENGINE: WEBGL_2.0<br>
-                AUTH: ABUBAKAR_KHAN
+            <div class="data-stream">
+                CORE STATUS: <span class="accent">STABLE</span><br>
+                PHYSICS SYNC: <span class="accent">ACTIVE</span><br>
+                MODEL: P_CLOUD_5000
             </div>
-            <div class="status">LIMITLESS ARCHITECTURE</div>
+            <div style="text-align: right;">
+                <p style="font-size: 1.2rem; margin: 0; color: #fff; font-weight: 700;">LIMITLESS</p>
+                <p style="font-size: 0.6rem; letter-spacing: 2px;">NEURAL SYNTHESIS ENGINE</p>
+            </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        let scene, camera, renderer, object;
+        let scene, camera, renderer, particles;
         let clock = new THREE.Clock();
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
 
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 3;
+            camera.position.z = 20;
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             document.body.appendChild(renderer.domElement);
 
-            // Create a complex "Icosahedron" but with high detail for a "liquid" look
-            const geometry = new THREE.IcosahedronGeometry(1.5, 15); 
-            
-            // This is the Magic: MeshNormalMaterial looks like moving liquid silver/chrome
-            const material = new THREE.MeshNormalMaterial({ 
-                wireframe: false,
-                flatShading: false
+            // 1. QUANTUM PARTICLES (5,000 Dynamic Points)
+            const pGeometry = new THREE.BufferGeometry();
+            const pCount = 5000;
+            const posArray = new Float32Array(pCount * 3);
+
+            for(let i=0; i < pCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 40; // Wide dispersion for a galaxy feel
+            }
+
+            pGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const pMaterial = new THREE.PointsMaterial({
+                size: 0.015,
+                color: 0x00f2fe, // Neon Cyan
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.7
             });
 
-            object = new THREE.Mesh(geometry, material);
-            scene.add(object);
+            particles = new THREE.Points(pGeometry, pMaterial);
+            scene.add(particles);
+
+            // Subtle Background Starfield for depth
+            const starGeo = new THREE.BufferGeometry();
+            const starPos = new Float32Array(2000 * 3);
+            for(let i=0; i < 2000 * 3; i++) starPos[i] = (Math.random() - 0.5) * 200;
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({ size: 0.005, color: 0xffffff });
+            scene.add(new THREE.Points(starGeo, starMat));
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // Touch support for mobile
+            document.addEventListener('touchmove', (e) => {
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            });
         }
 
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // PHYSICS: This makes the object "Morph" like liquid
-            const position = object.geometry.attributes.position;
-            const vector = new THREE.Vector3();
+            // PHYSICS: Dynamic Flow (Calculated manually for each particle)
+            const position = particles.geometry.attributes.position;
+            const currentPosition = position.array;
 
-            for (let i = 0; i < position.count; i++) {
-                vector.fromBufferAttribute(position, i);
-                
-                // Sin/Cos waves to create liquid ripple effect
-                const wave = Math.sin(vector.x * 2 + time) * 0.1 + 
-                             Math.cos(vector.y * 2 + time) * 0.1 +
-                             Math.sin(vector.z * 2 + time) * 0.1;
-                
-                vector.normalize().multiplyScalar(1.5 + wave);
-                position.setXYZ(i, vector.x, vector.y, vector.z);
+            for (let i = 0; i < currentPosition.length; i += 3) {
+                // Wave Math for smooth flowing motion
+                currentPosition[i+1] += Math.sin(time + currentPosition[i] * 0.1) * 0.02; // Y motion
+                currentPosition[i] += Math.cos(time + currentPosition[i+1] * 0.1) * 0.02; // X motion
             }
             position.needsUpdate = true;
 
-            object.rotation.y = time * 0.2;
-            object.rotation.x = time * 0.1;
+            // Interactive Flow: Mouse/Touch Interaction
+            if (mouseX > 0) {
+                targetX = (mouseX - window.innerWidth / 2) * 0.01;
+                targetY = (mouseY - window.innerHeight / 2) * 0.01;
+                particles.rotation.y += (targetX - particles.rotation.y) * 0.05;
+                particles.rotation.x += (targetY - particles.rotation.x) * 0.05;
+            } else {
+                particles.rotation.y += 0.001; // Base rotation when no touch
+            }
+
+            // Continuous rotation
+            particles.rotation.y += 0.0005;
 
             renderer.render(scene, camera);
         }
+
+        // Boot sequence
+        window.addEventListener('load', () => {
+            init();
+            setTimeout(() => {
+                document.getElementById('boot-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('boot-screen').remove(), 1500);
+            }, 2000);
+            animate();
+        });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        init();
-        animate();
     </script>
 </body>
 </html>
