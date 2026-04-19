@@ -3,124 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABUBAKAR | BEYOND LIMITS</title>
+    <title>TERMINAL | ABUBAKAR_ROOT</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&display=swap');
 
-        body { margin: 0; background: #050505; overflow: hidden; font-family: 'Space Grotesk', sans-serif; }
-        canvas { display: block; position: absolute; top: 0; left: 0; }
-
-        /* UI Layer - Pure Professionalism */
-        #ui {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; pointer-events: none;
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 60px; box-sizing: border-box;
+        body {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Fira Code', monospace;
+            margin: 0;
+            overflow: hidden;
+            text-transform: uppercase;
         }
 
-        .top-nav { display: flex; justify-content: space-between; align-items: flex-start; }
-        .brand { font-family: 'Syncopate', sans-serif; font-size: 2.2rem; letter-spacing: 12px; color: #fff; text-shadow: 0 0 30px rgba(0, 255, 150, 0.5); }
-        .version { color: #00ff96; font-size: 0.7rem; letter-spacing: 4px; font-weight: bold; border: 1px solid #00ff96; padding: 4px 10px; border-radius: 4px; }
+        /* Matrix Rain Background */
+        #matrix-bg {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1;
+            opacity: 0.15;
+        }
 
-        .center-text { text-align: center; color: rgba(255,255,255,0.1); font-size: 10vw; font-weight: 900; pointer-events: none; }
+        /* Terminal UI Layer */
+        #terminal {
+            position: relative;
+            z-index: 10;
+            padding: 30px;
+            height: 100vh;
+            background: radial-gradient(circle, transparent 20%, #000 100%);
+            display: flex;
+            flex-direction: column;
+        }
 
-        .footer { display: flex; justify-content: space-between; align-items: flex-end; }
-        .data-panel { border-left: 2px solid #00ff96; padding-left: 20px; color: #00ff96; font-size: 0.6rem; letter-spacing: 2px; line-height: 1.8; }
-        .social { color: #fff; font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; }
+        .header {
+            border-bottom: 2px solid #0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            animation: flicker 0.1s infinite;
+        }
+
+        .console-output {
+            flex-grow: 1;
+            overflow: hidden;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .line { margin-bottom: 5px; }
+        .success { color: #0f0; font-weight: bold; }
+        .danger { color: #f00; font-weight: bold; text-shadow: 0 0 10px #f00; }
+        .warning { color: #ff0; }
+
+        /* Hacker Scanner Box */
+        .scanner {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 250px;
+            border: 1px solid #0f0;
+            padding: 15px;
+            background: rgba(0, 20, 0, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            border: 1px solid #0f0;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        #fill {
+            height: 100%;
+            background: #0f0;
+            width: 0%;
+            transition: 0.1s;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: #0f0;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div id="ui">
-        <div class="top-nav">
-            <div class="brand">ABUBAKAR</div>
-            <div class="version">CORE v10.4</div>
+    <canvas id="matrix-bg"></canvas>
+
+    <div id="terminal">
+        <div class="header">
+            <span>SYSTEM: ABUBAKAR_EXPLOIT_V7</span>
+            <span>ENCRYPTION: AES-256</span>
         </div>
 
-        <div class="center-text">PROTO-CORE</div>
-
-        <div class="footer">
-            <div class="data-panel">
-                X-COORD: <span id="x-val">0.00</span><br>
-                Y-COORD: <span id="y-val">0.00</span><br>
-                SYSTEM: ENCRYPTED // MASTERPIECE MODE
+        <div class="console-output" id="output">
             </div>
-            <div class="social">BEYOND IMAGINATION</div>
+
+        <div class="line">
+            <span class="success">root@abubakar:~#</span> <span id="typing"></span><span class="cursor"></span>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div class="scanner">
+        <div style="font-size: 0.7rem;">OVERRIDING SECURITY...</div>
+        <div class="progress-bar"><div id="fill"></div></div>
+        <div id="percent" style="font-size: 0.8rem; margin-top: 5px;">0%</div>
+    </div>
 
     <script>
-        let scene, camera, renderer, mesh, clock;
+        // --- Matrix Rain Logic ---
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 2.5;
+        const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            document.body.appendChild(renderer.domElement);
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0f0";
+            ctx.font = fontSize + "px monospace";
 
-            clock = new THREE.Clock();
-
-            // The Masterpiece Geometry: Hyper-Torus Knot
-            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 200, 32);
-            
-            // Custom Shader-like Material (Liquid Neon)
-            const material = new THREE.MeshNormalMaterial({ 
-                wireframe: true,
-                transparent: true,
-                opacity: 0.9
+            drops.forEach((y, i) => {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
             });
-
-            mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            // Background Particles
-            const pGeo = new THREE.BufferGeometry();
-            const pCount = 3000;
-            const pos = new Float32Array(pCount * 3);
-            for(let i=0; i<pCount*3; i++) pos[i] = (Math.random() - 0.5) * 10;
-            pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            const pMat = new THREE.PointsMaterial({ size: 0.005, color: 0x00ff96 });
-            scene.add(new THREE.Points(pGeo, pMat));
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
+        // --- Terminal Logs ---
+        const output = document.getElementById('output');
+        const logs = [
+            "INITIALIZING BYPASS SEQUENCE...",
+            "CONNECTING TO REMOTE SERVER [192.168.1.254]",
+            "HANDSHAKE ESTABLISHED...",
+            "BRUTE-FORCING ROOT ACCESS...",
+            "WARNING: FIREWALL DETECTED",
+            "INJECTING SQL PAYLOAD...",
+            "BYPASSING KERNEL RESTRICTIONS...",
+            "ACCESS GRANTED",
+            "EXTRACTING ENCRYPTED DATA...",
+            "DOWNLOADING DATABASE..."
+        ];
 
-            // Morphing Animation
-            mesh.rotation.x = time * 0.4;
-            mesh.rotation.y = time * 0.2;
-            mesh.scale.setScalar(1 + Math.sin(time) * 0.1);
-
-            renderer.render(scene, camera);
+        let logIndex = 0;
+        function addLog() {
+            if (logIndex < logs.length) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                if (logs[logIndex].includes('WARNING')) line.className += ' warning';
+                if (logs[logIndex].includes('GRANTED')) line.className += ' success';
+                
+                line.innerHTML = `[${new Date().toLocaleTimeString()}] ${logs[logIndex]}`;
+                output.appendChild(line);
+                logIndex++;
+                setTimeout(addLog, 800);
+            }
         }
 
-        // Mouse Tracker for UI
-        window.addEventListener('mousemove', (e) => {
-            document.getElementById('x-val').innerText = (e.clientX / 100).toFixed(2);
-            document.getElementById('y-val').innerText = (e.clientY / 100).toFixed(2);
-            
-            // Tilt Effect
-            const x = (e.clientX / window.innerWidth - 0.5) * 1.5;
-            const y = (e.clientY / window.innerHeight - 0.5) * 1.5;
-            mesh.rotation.x += y * 0.05;
-            mesh.rotation.y += x * 0.05;
-        });
+        // --- Progress Bar ---
+        let width = 0;
+        function updateScanner() {
+            if (width < 100) {
+                width += Math.random() * 2;
+                if (width > 100) width = 100;
+                document.getElementById('fill').style.width = width + '%';
+                document.getElementById('percent').innerText = Math.floor(width) + '%';
+                setTimeout(updateScanner, 100);
+            } else {
+                document.getElementById('percent').innerText = "SYSTEM COMPROMISED";
+                document.getElementById('percent').className = "danger";
+            }
+        }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        init();
-        animate();
+        setInterval(drawMatrix, 50);
+        addLog();
+        updateScanner();
     </script>
 </body>
 </html>
