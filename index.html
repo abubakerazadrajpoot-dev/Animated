@@ -3,126 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abubakar Interstellar Masterpiece</title>
+    <title>Abubakar Interstellar | Final Masterpiece</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; }
+        canvas { display: block; position: absolute; top: 0; left: 0; }
         
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif;
-        }
-
-        /* Asli NASA Space Background (No-Load Error) */
-        .universe {
-            position: fixed; width: 100%; height: 100%;
-            background: url('https://w0.peakpx.com/wallpaper/419/547/HD-wallpaper-outer-space-stars-nebula-galaxy.jpg') no-repeat center center;
-            background-size: cover;
-            animation: slowZoom 20s infinite alternate;
-        }
-
-        @keyframes slowZoom {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
-        }
-
         #hud {
-            position: fixed; top: 40px; left: 40px; color: white;
-            border-left: 4px solid #00f2fe; padding-left: 20px; z-index: 10;
+            position: fixed; top: 30px; left: 30px; color: white;
+            border-left: 2px solid #00f2fe; padding-left: 15px; z-index: 10;
+            pointer-events: none;
         }
-
-        .solar-system {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Realistic Sun with Corona Effect */
-        .sun {
-            width: 120px; height: 120px;
-            background: radial-gradient(circle, #fff700 0%, #ff8800 50%, #ff4400 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 60px #ffaa00, 0 0 120px rgba(255, 170, 0, 0.4);
-            z-index: 5;
-            animation: sunGlow 3s infinite alternate;
-        }
-
-        @keyframes sunGlow {
-            from { transform: scale(1); box-shadow: 0 0 60px #ffaa00; }
-            to { transform: scale(1.05); box-shadow: 0 0 100px #ffaa00; }
-        }
-
-        /* Realistic Earth Orbit */
-        .earth-orbit {
-            position: absolute;
-            width: 350px; height: 350px;
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 50%;
-            animation: rotate 15s linear infinite;
-        }
-
-        .earth {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            width: 45px; height: 45px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') no-repeat;
-            background-size: contain;
-            filter: drop-shadow(0 0 15px #2277ff);
-        }
-
-        /* Saturn with Rings */
-        .saturn-orbit {
-            position: absolute;
-            width: 600px; height: 600px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: rotate 40s linear infinite;
-        }
-
-        .saturn {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
-            width: 90px; height: 50px;
-            background: url('https://pngimg.com/d/saturn_PNG1.png') no-repeat;
-            background-size: contain;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Floating Info Labels */
-        .label {
-            position: absolute; color: #00f2fe; font-size: 0.6rem;
-            letter-spacing: 2px; text-transform: uppercase;
-            margin-top: 50px; width: 100px; text-align: center;
-        }
-
+        .name { font-size: 1.5rem; letter-spacing: 5px; font-weight: 900; color: #fff; }
+        .status { font-size: 0.6rem; color: #00f2fe; text-transform: uppercase; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="universe"></div>
-
     <div id="hud">
-        <h1 style="margin:0; letter-spacing:8px;">ABUBAKAR</h1>
-        <p style="margin:0; font-size:0.7rem; color:#00f2fe;">COMMANDER | DEEP SPACE STATION 01</p>
+        <div class="name">ABUBAKAR</div>
+        <div class="status">Commander | Deep Space Station Genesis</div>
     </div>
 
-    <div class="solar-system">
-        <div class="sun"></div>
+    <canvas id="universe"></canvas>
 
-        <div class="earth-orbit">
-            <div class="earth">
-                <div class="label" style="top:40px;">EARTH (HOME)</div>
-            </div>
-        </div>
+    <script>
+        const canvas = document.getElementById('universe');
+        const ctx = canvas.getContext('2d');
 
-        <div class="saturn-orbit">
-            <div class="saturn">
-                <div class="label" style="top:60px;">SATURN</div>
-            </div>
-        </div>
-    </div>
+        let w, h;
+        const stars = [];
+        const planets = [
+            { name: "Mercury", dist: 60, size: 4, speed: 0.04, color: "#888", angle: 0 },
+            { name: "Venus", dist: 90, size: 7, speed: 0.02, color: "#e3bb76", angle: 0 },
+            { name: "Earth", dist: 130, size: 8, speed: 0.015, color: "#2277ff", angle: 0 },
+            { name: "Mars", dist: 170, size: 6, speed: 0.01, color: "#ff4400", angle: 0 },
+            { name: "Jupiter", dist: 230, size: 15, speed: 0.005, color: "#d39c7e", angle: 0 }
+        ];
 
+        function init() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            
+            // Generate 400 unique stars
+            for(let i=0; i<400; i++) {
+                stars.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    size: Math.random() * 1.5,
+                    opacity: Math.random(),
+                    blink: Math.random() * 0.02
+                });
+            }
+        }
+
+        function draw() {
+            // Dark Space Background
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw Stars (Twinkling)
+            stars.forEach(s => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+                s.opacity += s.blink;
+                if(s.opacity > 1 || s.opacity < 0) s.blink *= -1;
+            });
+
+            const cx = w / 2;
+            const cy = h / 2;
+
+            // Draw Sun (Glowing)
+            const sunGlow = ctx.createRadialGradient(cx, cy, 5, cx, cy, 40);
+            sunGlow.addColorStop(0, "#fff700");
+            sunGlow.addColorStop(0.5, "#ff8800");
+            sunGlow.addColorStop(1, "rgba(255, 68, 0, 0)");
+            
+            ctx.fillStyle = sunGlow;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 40, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Orbits & Planets
+            planets.forEach(p => {
+                // Orbit path
+                ctx.strokeStyle = "rgba(0, 242, 254, 0.1)";
+                ctx.beginPath();
+                ctx.arc(cx, cy, p.dist, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Planet position
+                const px = cx + Math.cos(p.angle) * p.dist;
+                const py = cy + Math.sin(p.angle) * p.dist;
+
+                // Planet Shadow/Glow
+                const pGlow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 2);
+                pGlow.addColorStop(0, p.color);
+                pGlow.addColorStop(1, "rgba(0,0,0,0)");
+
+                ctx.fillStyle = pGlow;
+                ctx.beginPath();
+                ctx.arc(px, py, p.size * 2, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(px, py, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.angle += p.speed;
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        draw();
+    </script>
 </body>
 </html>
