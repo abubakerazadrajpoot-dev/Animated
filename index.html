@@ -3,156 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Abubakar Cosmos | Masterpiece</title>
+    <title>NASA Level Universe | Abubakar</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@300;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; }
+        canvas { display: block; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
-            height: 100vh;
-            overflow: hidden;
-            font-family: 'Unbounded', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Detail Panel - Futuristic Glass */
+        #detail-panel {
+            position: fixed; bottom: -300px; left: 50%;
+            transform: translateX(-50%); width: 90%; max-width: 500px;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px);
+            border: 1px solid #00f2fe; border-radius: 20px 20px 0 0;
+            padding: 25px; transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white; z-index: 100; text-align: center;
         }
+        #detail-panel.active { bottom: 0; }
+        h2 { color: #00f2fe; margin: 0; text-transform: uppercase; letter-spacing: 4px; }
+        p { font-size: 0.9rem; opacity: 0.8; margin: 10px 0; line-height: 1.5; }
 
-        /* Ambient Space Background */
-        .space-bg {
-            position: fixed;
-            width: 200%; height: 200%;
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
-            background-size: 550px 550px, 350px 350px;
-            animation: spaceMove 100s linear infinite;
-            opacity: 0.5;
-            z-index: -1;
-        }
-
-        @keyframes spaceMove {
-            from { transform: translate(-25%, -25%) rotate(0deg); }
-            to { transform: translate(0%, 0%) rotate(5deg); }
-        }
-
-        /* HUD UI - Futuristic */
-        #interface {
-            position: fixed; top: 40px; left: 40px;
-            color: #fff; z-index: 100;
-            border-left: 2px solid #00f2fe; padding-left: 20px;
-        }
-        .user-tag { font-size: 0.6rem; letter-spacing: 5px; color: #00f2fe; text-transform: uppercase; }
-        .site-title { font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; }
-
-        /* The Solar System Container */
-        .system {
-            position: relative;
-            width: 100vw; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            perspective: 1000px;
-            transform: rotateX(20deg); /* 3D Perspective Tilt */
-        }
-
-        /* The Sun - Real Glow */
-        .sun {
-            position: absolute;
-            width: 100px; height: 100px;
-            background: #ffcc00;
-            border-radius: 50%;
-            box-shadow: 0 0 100px #ff6600, 0 0 200px rgba(255, 150, 0, 0.4);
-            filter: blur(1px);
-        }
-
-        /* Planet Orbit & Sphere Logic */
-        .orbit {
-            position: absolute;
-            border: 1px solid rgba(0, 242, 254, 0.15);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            animation: orbitRotation linear infinite;
-        }
-
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            top: 50%; left: -15px;
-            transform: translateY(-50%);
-            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.2);
-        }
-
-        /* Planet Specifics */
-        .p-earth { 
-            width: 30px; height: 30px; 
-            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
-            background-size: cover;
-            box-shadow: 0 0 20px rgba(0, 100, 255, 0.5);
-        }
-        .o-earth { width: 350px; height: 350px; animation-duration: 20s; }
-
-        .p-mars { 
-            width: 22px; height: 22px; 
-            background: radial-gradient(circle at 30% 30%, #ff4400, #441100);
-            box-shadow: 0 0 15px rgba(255, 68, 0, 0.4);
-        }
-        .o-mars { width: 480px; height: 480px; animation-duration: 35s; }
-
-        .p-jupiter {
-            width: 60px; height: 60px;
-            background: repeating-linear-gradient(#d39c7e, #af8362 10%, #d39c7e 20%);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .o-jupiter { width: 650px; height: 650px; animation-duration: 60s; }
-
-        @keyframes orbitRotation {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Pulse Animation for Glow */
-        .sun-pulse {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: inherit;
-            border-radius: inherit;
-            animation: pulse 4s ease-out infinite;
-            opacity: 0.5;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.5); opacity: 0; }
+        #hud {
+            position: fixed; top: 20px; left: 20px; color: white;
+            border-left: 2px solid #00f2fe; padding-left: 15px; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="space-bg"></div>
-
-    <div id="interface">
-        <p class="user-tag">Identity: Abubakar</p>
-        <h1 class="site-title">COSMOS MASTERPIECE</h1>
-        <p style="font-size: 0.5rem; opacity: 0.5; margin-top: 5px;">STATION: KHAIRPUR NODE-01</p>
+    <div id="hud">
+        <h1 style="font-size: 1rem; margin:0;">PROJECT GENESIS</h1>
+        <p style="font-size: 0.6rem; color: #00f2fe; margin:0;">STATION: ABUBAKAR INTERSTELLAR</p>
     </div>
 
-    <div class="system">
-        <div class="sun">
-            <div class="sun-pulse"></div>
-        </div>
-
-        <div class="orbit o-earth">
-            <div class="planet p-earth"></div>
-        </div>
-
-        <div class="orbit o-mars">
-            <div class="planet p-mars"></div>
-        </div>
-
-        <div class="orbit o-jupiter">
-            <div class="planet p-jupiter"></div>
-        </div>
+    <div id="detail-panel">
+        <h2 id="p-title">Planet</h2>
+        <p id="p-info">Scanning deep space...</p>
+        <button onclick="closePanel()" style="background:none; border:1px solid #00f2fe; color:white; padding:5px 15px; cursor:pointer;">DISMISS</button>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, raycaster, mouse;
+        let planets = [];
+
+        const info = {
+            "Sun": "The Star: A massive ball of plasma providing life to the system.",
+            "Earth": "The Home: Only planet known to harbor life. 70% Water.",
+            "Mars": "The Red Planet: Home to Olympus Mons, the highest volcano.",
+            "Jupiter": "The King: A gas giant 318 times more massive than Earth."
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 40, 120);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            const loader = new THREE.TextureLoader();
+
+            // 1. High-Res Milky Way Background
+            const bgGeo = new THREE.SphereGeometry(800, 64, 64);
+            const bgMat = new THREE.MeshBasicMaterial({
+                map: loader.load('https://app.metaschool.so/api/static-assets?name=milkyway.jpg'),
+                side: THREE.BackSide
+            });
+            scene.add(new THREE.Mesh(bgGeo, bgMat));
+
+            // 2. Real Glowing Sun
+            const sunGeo = new THREE.SphereGeometry(10, 64, 64);
+            const sunMat = new THREE.MeshBasicMaterial({
+                map: loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg'), // Base
+                color: 0xffdd44
+            });
+            const sun = new THREE.Mesh(sunGeo, sunMat);
+            sun.userData = { name: "Sun" };
+            scene.add(sun);
+            planets.push(sun);
+
+            // 3. Realistic Planet Factory
+            createPlanet("Earth", 3.5, 50, 0.005, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+            createPlanet("Mars", 2.5, 75, 0.003, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/marsmap1k.jpg');
+            createPlanet("Jupiter", 7, 110, 0.001, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/jupitermap.jpg');
+
+            // 4. Lighting (Asli Shadows ke liye)
+            const sunLight = new THREE.PointLight(0xffffff, 2, 500);
+            scene.add(sunLight);
+            scene.add(new THREE.AmbientLight(0x333333));
+
+            window.addEventListener('click', onPlanetClick);
+        }
+
+        function createPlanet(name, size, dist, speed, texUrl) {
+            const geo = new THREE.SphereGeometry(size, 64, 64);
+            const mat = new THREE.MeshStandardMaterial({ map: loader.load(texUrl), roughness: 0.5 });
+            const mesh = new THREE.Mesh(geo, mat);
+            
+            const group = new THREE.Group();
+            group.add(mesh);
+            mesh.position.x = dist;
+            group.userData = { speed: speed, name: name };
+            
+            // Orbit Ring
+            const orbitGeo = new THREE.RingGeometry(dist, dist + 0.2, 128);
+            const orbitMat = new THREE.MeshBasicMaterial({ color: 0x444444, side: THREE.DoubleSide });
+            const orbit = new THREE.Mesh(orbitGeo, orbitMat);
+            orbit.rotation.x = Math.PI/2;
+            scene.add(orbit);
+
+            scene.add(group);
+            planets.push(mesh); // Push actual mesh for clicking
+        }
+
+        function onPlanetClick(e) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(planets);
+
+            if (intersects.length > 0) {
+                const p = intersects[0].object;
+                const name = p.userData.name || p.parent.userData.name;
+                document.getElementById('p-title').innerText = name;
+                document.getElementById('p-info').innerText = info[name] || "Planetary data restricted.";
+                document.getElementById('detail-panel').classList.add('active');
+            }
+        }
+
+        function closePanel() { document.getElementById('detail-panel').classList.remove('active'); }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            scene.children.forEach(child => {
+                if(child.userData && child.userData.speed) {
+                    child.rotation.y += child.userData.speed;
+                }
+            });
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+
+        init(); animate();
+    </script>
 </body>
 </html>
