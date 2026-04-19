@@ -3,101 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABUBAKAR | THE REAL CORE</title>
+    <title>Fish Shop | Abubakar's Project</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&display=swap');
-        body { margin: 0; background: #000; overflow: hidden; }
-        canvas { display: block; position: absolute; top: 0; left: 0; }
-        
-        #name-plate {
-            position: absolute; top: 50px; width: 100%; text-align: center;
-            color: #00f2fe; font-family: 'Syncopate', sans-serif;
-            letter-spacing: 15px; font-size: 1.5rem; z-index: 10;
-            text-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #00509d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .fish-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #00509d;
+            padding-bottom: 10px;
+            color: #00509d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #00509d;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: #777;
         }
     </style>
 </head>
 <body>
 
-    <div id="name-plate">ABUBAKAR</div>
+    <header>FISH SHOP</header>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        let scene, camera, renderer, crystalBox, stars;
+    <div class="container">
+        <img src="https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=800&q=80" alt="Fresh Fish" class="fish-image">
+        
+        <h2>Fresh Fish Price List</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Fish Name</th>
+                    <th>Price (Per KG)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Rohu Fish</td>
+                    <td>RS 450</td>
+                </tr>
+                <tr>
+                    <td>Bangda (Mackerel)</td>
+                    <td>RS 300</td>
+                </tr>
+                <tr>
+                    <td>Surmai (King Fish)</td>
+                    <td>RS 800</td>
+                </tr>
+                <tr>
+                    <td>Pomfret</td>
+                    <td>RS 1200</td>
+                </tr>
+                <tr>
+                    <td>Prawns</td>
+                    <td>RS 600</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
+    <div class="footer">
+        &copy; 2026 Fish Shop | Created for a Friend
+    </div>
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
-
-            // 1. THE PROFESSIONAL CRYSTAL BOX
-            // Humein "Box" chahiye jo solid ho, lekin chamkay
-            const geometry = new THREE.BoxGeometry(2, 2, 2);
-            
-            // Ye material professional aur glassy look deta hai
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0x001a1a, 
-                emissive: 0x00f2fe,
-                emissiveIntensity: 0.2,
-                specular: 0x00f2fe,
-                shininess: 100,
-                transparent: true,
-                opacity: 0.9,
-                side: THREE.DoubleSide
-            });
-
-            crystalBox = new THREE.Mesh(geometry, material);
-            
-            // Box ke edges ko chamkane ke liye "EdgesGeometry"
-            const edges = new THREE.EdgesGeometry(geometry);
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x00f2fe, linewidth: 2 });
-            const wireframe = new THREE.LineSegments(edges, lineMat);
-            
-            crystalBox.add(wireframe); // Box ke sath lines bhi add kar di
-            scene.add(crystalBox);
-
-            // 2. DEEP SPACE STARS
-            const sGeo = new THREE.BufferGeometry();
-            const sPos = new Float32Array(4000 * 3);
-            for(let i=0; i<4000*3; i++) sPos[i] = (Math.random() - 0.5) * 50;
-            sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-            const sMat = new THREE.PointsMaterial({ size: 0.015, color: 0xffffff });
-            stars = new THREE.Points(sGeo, sMat);
-            scene.add(stars);
-
-            // 3. LIGHTING (Jo box ko professional banati hai)
-            const light = new THREE.PointLight(0x00f2fe, 2, 50);
-            light.position.set(5, 5, 5);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x111111));
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Professional Smooth Rotation
-            crystalBox.rotation.x += 0.005;
-            crystalBox.rotation.y += 0.008;
-            
-            // Stars ko halke se ghumana
-            stars.rotation.y += 0.0003;
-
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        init();
-        animate();
-    </script>
 </body>
 </html>
