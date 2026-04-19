@@ -3,125 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abubakar Interstellar | Final Masterpiece</title>
+    <title>Abubakar Interstellar | Hyper-Realism</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; }
-        canvas { display: block; position: absolute; top: 0; left: 0; }
-        
-        #hud {
-            position: fixed; top: 30px; left: 30px; color: white;
-            border-left: 2px solid #00f2fe; padding-left: 15px; z-index: 10;
-            pointer-events: none;
+        #loader {
+            position: fixed; width: 100%; height: 100%; background: #000;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100; color: #00f2fe; transition: 1s;
         }
-        .name { font-size: 1.5rem; letter-spacing: 5px; font-weight: 900; color: #fff; }
-        .status { font-size: 0.6rem; color: #00f2fe; text-transform: uppercase; margin-top: 5px; }
+        #hud {
+            position: fixed; top: 40px; left: 40px; color: white;
+            border-left: 3px solid #00f2fe; padding-left: 20px; pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
+    <div id="loader"><h1>INITIALIZING UNIVERSE...</h1></div>
+
     <div id="hud">
-        <div class="name">ABUBAKAR</div>
-        <div class="status">Commander | Deep Space Station Genesis</div>
+        <h1 style="margin:0; letter-spacing:5px;">ABUBAKAR</h1>
+        <p style="margin:0; font-size:0.7rem; color:#00f2fe;">HYPER-REALISTIC SIMULATION v4.0</p>
     </div>
 
-    <canvas id="universe"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        const canvas = document.getElementById('universe');
-        const ctx = canvas.getContext('2d');
-
-        let w, h;
-        const stars = [];
-        const planets = [
-            { name: "Mercury", dist: 60, size: 4, speed: 0.04, color: "#888", angle: 0 },
-            { name: "Venus", dist: 90, size: 7, speed: 0.02, color: "#e3bb76", angle: 0 },
-            { name: "Earth", dist: 130, size: 8, speed: 0.015, color: "#2277ff", angle: 0 },
-            { name: "Mars", dist: 170, size: 6, speed: 0.01, color: "#ff4400", angle: 0 },
-            { name: "Jupiter", dist: 230, size: 15, speed: 0.005, color: "#d39c7e", angle: 0 }
-        ];
-
+        let scene, camera, renderer, planets = [];
+        
         function init() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            
-            // Generate 400 unique stars
-            for(let i=0; i<400; i++) {
-                stars.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    size: Math.random() * 1.5,
-                    opacity: Math.random(),
-                    blink: Math.random() * 0.02
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
+            camera.position.set(0, 150, 400); // Cinematic Start Position
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            // 1. ASLI SPACE LIGHTING (The Secret Sauce)
+            const sunLight = new THREE.PointLight(0xffffff, 3, 1000);
+            scene.add(sunLight); // Sun is the only light source
+            scene.add(new THREE.AmbientLight(0x111111)); // Deep space darkness
+
+            // 2. STARFIELD (Nebula Effect)
+            const starGeo = new THREE.BufferGeometry();
+            const starPos = new Float32Array(15000 * 3);
+            for(let i=0; i<45000; i++) starPos[i] = (Math.random() - 0.5) * 3000;
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xaaaaaa, size: 0.7})));
+
+            // 3. THE SUN (Volumetric Glow)
+            const sunGeo = new THREE.SphereGeometry(25, 64, 64);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+            const sun = new THREE.Mesh(sunGeo, sunMat);
+            scene.add(sun);
+
+            // 4. PLANET FACTORY (Real 3D Shaders)
+            const pSpecs = [
+                {name: "Mercury", size: 3, dist: 70, speed: 0.01, color: 0x888888},
+                {name: "Venus", size: 6, dist: 110, speed: 0.007, color: 0xe3bb76},
+                {name: "Earth", size: 7, dist: 160, speed: 0.005, color: 0x2277ff},
+                {name: "Mars", size: 5, dist: 210, speed: 0.004, color: 0xff4400},
+                {name: "Jupiter", size: 18, dist: 300, speed: 0.002, color: 0xd39c7e}
+            ];
+
+            pSpecs.forEach(spec => {
+                const group = new THREE.Group();
+                const geo = new THREE.SphereGeometry(spec.size, 64, 64);
+                // StandardMaterial uses Light to create Shadows (Realism)
+                const mat = new THREE.MeshStandardMaterial({ 
+                    color: spec.color,
+                    roughness: 0.7,
+                    metalness: 0.2
                 });
-            }
-        }
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.x = spec.dist;
+                group.add(mesh);
+                group.userData = { speed: spec.speed };
+                planets.push(group);
+                scene.add(group);
 
-        function draw() {
-            // Dark Space Background
-            ctx.fillStyle = "#000";
-            ctx.fillRect(0, 0, w, h);
-
-            // Draw Stars (Twinkling)
-            stars.forEach(s => {
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-                s.opacity += s.blink;
-                if(s.opacity > 1 || s.opacity < 0) s.blink *= -1;
+                // Subtle Orbit Path
+                const orbitGeo = new THREE.RingGeometry(spec.dist, spec.dist + 0.5, 128);
+                const orbitMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.05 });
+                const orbit = new THREE.Mesh(orbitGeo, orbitMat);
+                orbit.rotation.x = Math.PI/2;
+                scene.add(orbit);
             });
 
-            const cx = w / 2;
-            const cy = h / 2;
+            setTimeout(() => { document.getElementById('loader').style.opacity = '0'; }, 2000);
+        }
 
-            // Draw Sun (Glowing)
-            const sunGlow = ctx.createRadialGradient(cx, cy, 5, cx, cy, 40);
-            sunGlow.addColorStop(0, "#fff700");
-            sunGlow.addColorStop(0.5, "#ff8800");
-            sunGlow.addColorStop(1, "rgba(255, 68, 0, 0)");
-            
-            ctx.fillStyle = sunGlow;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 40, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Draw Orbits & Planets
+        function animate() {
+            requestAnimationFrame(animate);
             planets.forEach(p => {
-                // Orbit path
-                ctx.strokeStyle = "rgba(0, 242, 254, 0.1)";
-                ctx.beginPath();
-                ctx.arc(cx, cy, p.dist, 0, Math.PI * 2);
-                ctx.stroke();
-
-                // Planet position
-                const px = cx + Math.cos(p.angle) * p.dist;
-                const py = cy + Math.sin(p.angle) * p.dist;
-
-                // Planet Shadow/Glow
-                const pGlow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 2);
-                pGlow.addColorStop(0, p.color);
-                pGlow.addColorStop(1, "rgba(0,0,0,0)");
-
-                ctx.fillStyle = pGlow;
-                ctx.beginPath();
-                ctx.arc(px, py, p.size * 2, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(px, py, p.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                p.angle += p.speed;
+                p.rotation.y += p.userData.speed;
+                p.children[0].rotation.y += 0.01; // Planet self-rotation
             });
 
-            requestAnimationFrame(draw);
+            // Smooth Camera Entry
+            if(camera.position.y > 80) {
+                camera.position.y -= 0.5;
+                camera.position.z -= 0.8;
+            }
+
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', init);
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
         init();
-        draw();
+        animate();
     </script>
 </body>
 </html>
