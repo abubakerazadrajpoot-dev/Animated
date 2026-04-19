@@ -1,128 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Masterpiece | Abubakar</title>
+    <title>The Abubakar Cosmos | Masterpiece</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@300;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #000 100%);
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: black;
             overflow: hidden;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Unbounded', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Deep Space Stars */
-        .stars {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+        /* Ambient Space Background */
+        .space-bg {
+            position: fixed;
+            width: 200%; height: 200%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.1) 1px, transparent 30px);
+            background-size: 550px 550px, 350px 350px;
+            animation: spaceMove 100s linear infinite;
+            opacity: 0.5;
             z-index: -1;
         }
 
-        #hud {
-            position: fixed; top: 30px; left: 30px;
-            color: white; border-left: 3px solid #00f2fe; padding-left: 15px;
+        @keyframes spaceMove {
+            from { transform: translate(-25%, -25%) rotate(0deg); }
+            to { transform: translate(0%, 0%) rotate(5deg); }
         }
 
-        .solar-system {
+        /* HUD UI - Futuristic */
+        #interface {
+            position: fixed; top: 40px; left: 40px;
+            color: #fff; z-index: 100;
+            border-left: 2px solid #00f2fe; padding-left: 20px;
+        }
+        .user-tag { font-size: 0.6rem; letter-spacing: 5px; color: #00f2fe; text-transform: uppercase; }
+        .site-title { font-size: 1.5rem; font-weight: 900; letter-spacing: -1px; }
+
+        /* The Solar System Container */
+        .system {
             position: relative;
-            width: 800px;
-            height: 800px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: scale(0.6); /* Mobile fix */
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            perspective: 1000px;
+            transform: rotateX(20deg); /* 3D Perspective Tilt */
         }
 
-        /* The Sun */
+        /* The Sun - Real Glow */
         .sun {
             position: absolute;
-            width: 80px; height: 80px;
-            background: radial-gradient(circle, #ff0, #f90, #f00);
+            width: 100px; height: 100px;
+            background: #ffcc00;
             border-radius: 50%;
-            box-shadow: 0 0 50px #ffcc00;
+            box-shadow: 0 0 100px #ff6600, 0 0 200px rgba(255, 150, 0, 0.4);
+            filter: blur(1px);
         }
 
-        /* Planets Base Style */
+        /* Planet Orbit & Sphere Logic */
         .orbit {
             position: absolute;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.15);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: rotate linear infinite;
+            display: flex; justify-content: center; align-items: center;
+            animation: orbitRotation linear infinite;
         }
 
         .planet {
             position: absolute;
             border-radius: 50%;
-            top: -10px; /* Orbit ke upar bithane ke liye */
+            top: 50%; left: -15px;
+            transform: translateY(-50%);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.2);
         }
 
-        /* Individual Orbits & Planets */
-        .mercury-orbit { width: 140px; height: 140px; animation-duration: 3s; }
-        .mercury { width: 10px; height: 10px; background: #999; left: 50%; }
+        /* Planet Specifics */
+        .p-earth { 
+            width: 30px; height: 30px; 
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
+            background-size: cover;
+            box-shadow: 0 0 20px rgba(0, 100, 255, 0.5);
+        }
+        .o-earth { width: 350px; height: 350px; animation-duration: 20s; }
 
-        .venus-orbit { width: 200px; height: 200px; animation-duration: 6s; }
-        .venus { width: 18px; height: 18px; background: #e3bb76; }
-
-        .earth-orbit { width: 280px; height: 280px; animation-duration: 10s; }
-        .earth { 
+        .p-mars { 
             width: 22px; height: 22px; 
-            background: radial-gradient(circle, #2277ff, #111);
-            box-shadow: 0 0 10px #2277ff;
+            background: radial-gradient(circle at 30% 30%, #ff4400, #441100);
+            box-shadow: 0 0 15px rgba(255, 68, 0, 0.4);
         }
+        .o-mars { width: 480px; height: 480px; animation-duration: 35s; }
 
-        .mars-orbit { width: 360px; height: 360px; animation-duration: 15s; }
-        .mars { width: 16px; height: 16px; background: #ff4400; }
-
-        .jupiter-orbit { width: 500px; height: 500px; animation-duration: 30s; }
-        .jupiter { width: 45px; height: 45px; background: #d39c7e; }
-
-        .saturn-orbit { width: 650px; height: 650px; animation-duration: 50s; }
-        .saturn { 
-            width: 35px; height: 35px; background: #ead6b8; 
-            border-bottom: 4px solid rgba(255,255,255,0.3); /* Ring effect */
+        .p-jupiter {
+            width: 60px; height: 60px;
+            background: repeating-linear-gradient(#d39c7e, #af8362 10%, #d39c7e 20%);
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        .o-jupiter { width: 650px; height: 650px; animation-duration: 60s; }
 
-        @keyframes rotate {
+        @keyframes orbitRotation {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 600px) {
-            .solar-system { transform: scale(0.4); }
-            h1 { font-size: 1rem; }
+        /* Pulse Animation for Glow */
+        .sun-pulse {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            animation: pulse 4s ease-out infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="stars"></div>
+    <div class="space-bg"></div>
 
-    <div id="hud">
-        <h1 style="margin:0; color:white; letter-spacing:3px;">COSMOS ULTRA</h1>
-        <p style="margin:0; color:#00f2fe; font-size:0.7rem;">STABLE VERSION | EXPLORER: ABUBAKAR</p>
+    <div id="interface">
+        <p class="user-tag">Identity: Abubakar</p>
+        <h1 class="site-title">COSMOS MASTERPIECE</h1>
+        <p style="font-size: 0.5rem; opacity: 0.5; margin-top: 5px;">STATION: KHAIRPUR NODE-01</p>
     </div>
 
-    <div class="solar-system">
-        <div class="sun"></div>
-        
-        <div class="orbit mercury-orbit"><div class="planet mercury"></div></div>
-        <div class="orbit venus-orbit"><div class="planet venus"></div></div>
-        <div class="orbit earth-orbit"><div class="planet earth"></div></div>
-        <div class="orbit mars-orbit"><div class="planet mars"></div></div>
-        <div class="orbit jupiter-orbit"><div class="planet jupiter"></div></div>
-        <div class="orbit saturn-orbit"><div class="planet saturn"></div></div>
+    <div class="system">
+        <div class="sun">
+            <div class="sun-pulse"></div>
+        </div>
+
+        <div class="orbit o-earth">
+            <div class="planet p-earth"></div>
+        </div>
+
+        <div class="orbit o-mars">
+            <div class="planet p-mars"></div>
+        </div>
+
+        <div class="orbit o-jupiter">
+            <div class="planet p-jupiter"></div>
+        </div>
     </div>
 
 </body>
