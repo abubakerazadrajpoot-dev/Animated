@@ -1,115 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masterpiece V2 | Abubakar</title>
+    <title>Universal Masterpiece | Abubakar</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; }
-        canvas { display: block; }
+        
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Deep Space Stars */
+        .stars {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            z-index: -1;
+        }
 
         #hud {
             position: fixed; top: 30px; left: 30px;
-            color: white; pointer-events: none;
-            border-left: 3px solid #00f2fe; padding-left: 15px;
-            z-index: 10;
+            color: white; border-left: 3px solid #00f2fe; padding-left: 15px;
         }
-        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 5px; text-transform: uppercase; }
-        .status { font-size: 0.6rem; color: #00f2fe; }
+
+        .solar-system {
+            position: relative;
+            width: 800px;
+            height: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.6); /* Mobile fix */
+        }
+
+        /* The Sun */
+        .sun {
+            position: absolute;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, #ff0, #f90, #f00);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ffcc00;
+        }
+
+        /* Planets Base Style */
+        .orbit {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate linear infinite;
+        }
+
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            top: -10px; /* Orbit ke upar bithane ke liye */
+        }
+
+        /* Individual Orbits & Planets */
+        .mercury-orbit { width: 140px; height: 140px; animation-duration: 3s; }
+        .mercury { width: 10px; height: 10px; background: #999; left: 50%; }
+
+        .venus-orbit { width: 200px; height: 200px; animation-duration: 6s; }
+        .venus { width: 18px; height: 18px; background: #e3bb76; }
+
+        .earth-orbit { width: 280px; height: 280px; animation-duration: 10s; }
+        .earth { 
+            width: 22px; height: 22px; 
+            background: radial-gradient(circle, #2277ff, #111);
+            box-shadow: 0 0 10px #2277ff;
+        }
+
+        .mars-orbit { width: 360px; height: 360px; animation-duration: 15s; }
+        .mars { width: 16px; height: 16px; background: #ff4400; }
+
+        .jupiter-orbit { width: 500px; height: 500px; animation-duration: 30s; }
+        .jupiter { width: 45px; height: 45px; background: #d39c7e; }
+
+        .saturn-orbit { width: 650px; height: 650px; animation-duration: 50s; }
+        .saturn { 
+            width: 35px; height: 35px; background: #ead6b8; 
+            border-bottom: 4px solid rgba(255,255,255,0.3); /* Ring effect */
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .solar-system { transform: scale(0.4); }
+            h1 { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="stars"></div>
+
     <div id="hud">
-        <h1>COSMOS V2.0</h1>
-        <p class="status">SYSTEM ONLINE | EXPLORER: ABUBAKAR</p>
+        <h1 style="margin:0; color:white; letter-spacing:3px;">COSMOS ULTRA</h1>
+        <p style="margin:0; color:#00f2fe; font-size:0.7rem;">STABLE VERSION | EXPLORER: ABUBAKAR</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <div class="solar-system">
+        <div class="sun"></div>
+        
+        <div class="orbit mercury-orbit"><div class="planet mercury"></div></div>
+        <div class="orbit venus-orbit"><div class="planet venus"></div></div>
+        <div class="orbit earth-orbit"><div class="planet earth"></div></div>
+        <div class="orbit mars-orbit"><div class="planet mars"></div></div>
+        <div class="orbit jupiter-orbit"><div class="planet jupiter"></div></div>
+        <div class="orbit saturn-orbit"><div class="planet saturn"></div></div>
+    </div>
 
-    <script>
-        let scene, camera, renderer, planets = [];
-
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.set(0, 80, 180);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
-
-            // 1. Suraj (The Sun) - Asli Glow ke saath
-            const sunGeo = new THREE.SphereGeometry(10, 64, 64);
-            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
-            const sun = new THREE.Mesh(sunGeo, sunMat);
-            scene.add(sun);
-
-            // 2. Stars Background (Ye black screen khatam karega)
-            const starGeo = new THREE.BufferGeometry();
-            const starPos = new Float32Array(8000 * 3);
-            for(let i=0; i<24000; i++) starPos[i] = (Math.random() - 0.5) * 1500;
-            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-            const starMat = new THREE.PointsMaterial({color: 0xffffff, size: 0.8});
-            scene.add(new THREE.Points(starGeo, starMat));
-
-            // 3. Planets (Colors aur Orbits ke saath)
-            const pConfigs = [
-                {name: "Mercury", size: 1.2, dist: 30, speed: 0.02, color: 0x999999},
-                {name: "Venus", size: 2.5, dist: 50, speed: 0.015, color: 0xffcc33},
-                {name: "Earth", size: 2.8, dist: 75, speed: 0.01, color: 0x0077ff},
-                {name: "Mars", size: 1.8, dist: 95, speed: 0.008, color: 0xff4400},
-                {name: "Jupiter", size: 6, dist: 130, speed: 0.005, color: 0xffa500},
-                {name: "Saturn", size: 5, dist: 170, speed: 0.003, color: 0xdfd8d0}
-            ];
-
-            pConfigs.forEach(data => {
-                const pGroup = new THREE.Group();
-                const geo = new THREE.SphereGeometry(data.size, 32, 32);
-                const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.5, metalness: 0.5 });
-                const mesh = new THREE.Mesh(geo, mat);
-                
-                mesh.position.x = data.dist;
-                pGroup.add(mesh);
-                pGroup.userData = { speed: data.speed };
-                planets.push(pGroup);
-                scene.add(pGroup);
-
-                // Safaid Orbit Line
-                const ringGeo = new THREE.RingGeometry(data.dist - 0.2, data.dist + 0.2, 128);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x333333, side: THREE.DoubleSide });
-                const ring = new THREE.Mesh(ringGeo, ringMat);
-                ring.rotation.x = Math.PI / 2;
-                scene.add(ring);
-            });
-
-            // Lighting
-            const light = new THREE.PointLight(0xffffff, 2.5, 500);
-            light.position.set(0, 0, 0);
-            scene.add(light);
-            scene.add(new THREE.AmbientLight(0x444444));
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            planets.forEach(p => {
-                p.rotation.y += p.userData.speed;
-                p.children[0].rotation.y += 0.02; // Planet khud bhi ghoome
-            });
-            camera.lookAt(scene.position);
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        init();
-        animate();
-    </script>
 </body>
 </html>
