@@ -3,154 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Level Universe | Abubakar</title>
+    <title>Abubakar Interstellar Masterpiece</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif; }
-        canvas { display: block; }
-
-        /* Detail Panel - Futuristic Glass */
-        #detail-panel {
-            position: fixed; bottom: -300px; left: 50%;
-            transform: translateX(-50%); width: 90%; max-width: 500px;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px);
-            border: 1px solid #00f2fe; border-radius: 20px 20px 0 0;
-            padding: 25px; transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: white; z-index: 100; text-align: center;
+        
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: #000; overflow: hidden; font-family: 'Orbitron', sans-serif;
         }
-        #detail-panel.active { bottom: 0; }
-        h2 { color: #00f2fe; margin: 0; text-transform: uppercase; letter-spacing: 4px; }
-        p { font-size: 0.9rem; opacity: 0.8; margin: 10px 0; line-height: 1.5; }
+
+        /* Asli NASA Space Background (No-Load Error) */
+        .universe {
+            position: fixed; width: 100%; height: 100%;
+            background: url('https://w0.peakpx.com/wallpaper/419/547/HD-wallpaper-outer-space-stars-nebula-galaxy.jpg') no-repeat center center;
+            background-size: cover;
+            animation: slowZoom 20s infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
 
         #hud {
-            position: fixed; top: 20px; left: 20px; color: white;
-            border-left: 2px solid #00f2fe; padding-left: 15px; pointer-events: none;
+            position: fixed; top: 40px; left: 40px; color: white;
+            border-left: 4px solid #00f2fe; padding-left: 20px; z-index: 10;
         }
+
+        .solar-system {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Realistic Sun with Corona Effect */
+        .sun {
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, #fff700 0%, #ff8800 50%, #ff4400 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #ffaa00, 0 0 120px rgba(255, 170, 0, 0.4);
+            z-index: 5;
+            animation: sunGlow 3s infinite alternate;
+        }
+
+        @keyframes sunGlow {
+            from { transform: scale(1); box-shadow: 0 0 60px #ffaa00; }
+            to { transform: scale(1.05); box-shadow: 0 0 100px #ffaa00; }
+        }
+
+        /* Realistic Earth Orbit */
+        .earth-orbit {
+            position: absolute;
+            width: 350px; height: 350px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 50%;
+            animation: rotate 15s linear infinite;
+        }
+
+        .earth {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 45px; height: 45px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png') no-repeat;
+            background-size: contain;
+            filter: drop-shadow(0 0 15px #2277ff);
+        }
+
+        /* Saturn with Rings */
+        .saturn-orbit {
+            position: absolute;
+            width: 600px; height: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: rotate 40s linear infinite;
+        }
+
+        .saturn {
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+            width: 90px; height: 50px;
+            background: url('https://pngimg.com/d/saturn_PNG1.png') no-repeat;
+            background-size: contain;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating Info Labels */
+        .label {
+            position: absolute; color: #00f2fe; font-size: 0.6rem;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-top: 50px; width: 100px; text-align: center;
+        }
+
     </style>
 </head>
 <body>
 
+    <div class="universe"></div>
+
     <div id="hud">
-        <h1 style="font-size: 1rem; margin:0;">PROJECT GENESIS</h1>
-        <p style="font-size: 0.6rem; color: #00f2fe; margin:0;">STATION: ABUBAKAR INTERSTELLAR</p>
+        <h1 style="margin:0; letter-spacing:8px;">ABUBAKAR</h1>
+        <p style="margin:0; font-size:0.7rem; color:#00f2fe;">COMMANDER | DEEP SPACE STATION 01</p>
     </div>
 
-    <div id="detail-panel">
-        <h2 id="p-title">Planet</h2>
-        <p id="p-info">Scanning deep space...</p>
-        <button onclick="closePanel()" style="background:none; border:1px solid #00f2fe; color:white; padding:5px 15px; cursor:pointer;">DISMISS</button>
+    <div class="solar-system">
+        <div class="sun"></div>
+
+        <div class="earth-orbit">
+            <div class="earth">
+                <div class="label" style="top:40px;">EARTH (HOME)</div>
+            </div>
+        </div>
+
+        <div class="saturn-orbit">
+            <div class="saturn">
+                <div class="label" style="top:60px;">SATURN</div>
+            </div>
+        </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <script>
-        let scene, camera, renderer, raycaster, mouse;
-        let planets = [];
-
-        const info = {
-            "Sun": "The Star: A massive ball of plasma providing life to the system.",
-            "Earth": "The Home: Only planet known to harbor life. 70% Water.",
-            "Mars": "The Red Planet: Home to Olympus Mons, the highest volcano.",
-            "Jupiter": "The King: A gas giant 318 times more massive than Earth."
-        };
-
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.position.set(0, 40, 120);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
-
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
-
-            const loader = new THREE.TextureLoader();
-
-            // 1. High-Res Milky Way Background
-            const bgGeo = new THREE.SphereGeometry(800, 64, 64);
-            const bgMat = new THREE.MeshBasicMaterial({
-                map: loader.load('https://app.metaschool.so/api/static-assets?name=milkyway.jpg'),
-                side: THREE.BackSide
-            });
-            scene.add(new THREE.Mesh(bgGeo, bgMat));
-
-            // 2. Real Glowing Sun
-            const sunGeo = new THREE.SphereGeometry(10, 64, 64);
-            const sunMat = new THREE.MeshBasicMaterial({
-                map: loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg'), // Base
-                color: 0xffdd44
-            });
-            const sun = new THREE.Mesh(sunGeo, sunMat);
-            sun.userData = { name: "Sun" };
-            scene.add(sun);
-            planets.push(sun);
-
-            // 3. Realistic Planet Factory
-            createPlanet("Earth", 3.5, 50, 0.005, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-            createPlanet("Mars", 2.5, 75, 0.003, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/marsmap1k.jpg');
-            createPlanet("Jupiter", 7, 110, 0.001, 'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/jupitermap.jpg');
-
-            // 4. Lighting (Asli Shadows ke liye)
-            const sunLight = new THREE.PointLight(0xffffff, 2, 500);
-            scene.add(sunLight);
-            scene.add(new THREE.AmbientLight(0x333333));
-
-            window.addEventListener('click', onPlanetClick);
-        }
-
-        function createPlanet(name, size, dist, speed, texUrl) {
-            const geo = new THREE.SphereGeometry(size, 64, 64);
-            const mat = new THREE.MeshStandardMaterial({ map: loader.load(texUrl), roughness: 0.5 });
-            const mesh = new THREE.Mesh(geo, mat);
-            
-            const group = new THREE.Group();
-            group.add(mesh);
-            mesh.position.x = dist;
-            group.userData = { speed: speed, name: name };
-            
-            // Orbit Ring
-            const orbitGeo = new THREE.RingGeometry(dist, dist + 0.2, 128);
-            const orbitMat = new THREE.MeshBasicMaterial({ color: 0x444444, side: THREE.DoubleSide });
-            const orbit = new THREE.Mesh(orbitGeo, orbitMat);
-            orbit.rotation.x = Math.PI/2;
-            scene.add(orbit);
-
-            scene.add(group);
-            planets.push(mesh); // Push actual mesh for clicking
-        }
-
-        function onPlanetClick(e) {
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(planets);
-
-            if (intersects.length > 0) {
-                const p = intersects[0].object;
-                const name = p.userData.name || p.parent.userData.name;
-                document.getElementById('p-title').innerText = name;
-                document.getElementById('p-info').innerText = info[name] || "Planetary data restricted.";
-                document.getElementById('detail-panel').classList.add('active');
-            }
-        }
-
-        function closePanel() { document.getElementById('detail-panel').classList.remove('active'); }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            scene.children.forEach(child => {
-                if(child.userData && child.userData.speed) {
-                    child.rotation.y += child.userData.speed;
-                }
-            });
-            camera.lookAt(scene.position);
-            renderer.render(scene, camera);
-        }
-
-        init(); animate();
-    </script>
 </body>
 </html>
